@@ -1,12 +1,14 @@
 # Spring Boot Signup Application
 
-Java Spring Boot, Tailwind CSS, MongoDB를 사용한 회원가입 페이지 애플리케이션입니다.
+Java Spring Boot, Tailwind CSS, MariaDB를 사용한 회원가입 페이지 애플리케이션입니다.
 
 ## 기술 스택
 
 - **Backend**: Java Spring Boot 3.1.5
-- **Database**: MongoDB
-- **Frontend**: Tailwind CSS
+- **Database**: MariaDB
+- **Frontend**: Tailwind CSS (CDN)
+- **ORM**: Spring Data JPA / Hibernate
+- **Template Engine**: Thymeleaf
 - **Build Tool**: Maven
 - **Java Version**: 17+
 
@@ -23,7 +25,7 @@ signup-app/
 │   │   │   ├── service/
 │   │   │   │   └── UserService.java         # 사용자 서비스
 │   │   │   ├── repository/
-│   │   │   │   └── UserRepository.java      # MongoDB 리포지토리
+│   │   │   │   └── UserRepository.java      # JPA 리포지토리
 │   │   │   └── model/
 │   │   │       └── User.java                # 사용자 모델
 │   │   └── resources/
@@ -40,11 +42,28 @@ signup-app/
 
 ## 설치 및 실행
 
-### 1. MongoDB 실행
+### 1. MariaDB 실행
 
 ```bash
-# MongoDB가 설치되어 있어야 합니다
-mongod --dbpath /path/to/data
+# macOS (Homebrew)
+brew services start mariadb
+
+# 또는 Docker
+docker run -d -p 3306:3306 --name mariadb \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=signup_db \
+  mariadb:latest
+```
+
+### 2. 데이터베이스 및 사용자 생성
+
+```bash
+mariadb -u root -p
+# 프롬프트에서:
+CREATE DATABASE IF NOT EXISTS signup_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'signup'@'localhost' IDENTIFIED BY 'signup_pass';
+GRANT ALL PRIVILEGES ON signup_db.* TO 'signup'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
 ### 2. 프로젝트 빌드
@@ -73,9 +92,9 @@ java -jar target/signup-app-1.0.0.jar
 
 - ✅ 회원가입 폼 (이름, 이메일, 비밀번호, 전화번호, 나이)
 - ✅ 클라이언트/서버 유효성 검사
-- ✅ MongoDB에 사용자 데이터 저장
+- ✅ MariaDB에 사용자 데이터 저장 (JPA/Hibernate)
 - ✅ 중복 이메일 검사
-- ✅ 비밀번호 확인 검증
+- ✅ 비밀번호 6자 이상 검증
 - ✅ 약관 동의 확인
 - ✅ 반응형 디자인 (Tailwind CSS)
 
