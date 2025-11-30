@@ -3,6 +3,10 @@ package com.example.controller;
 import com.example.model.User;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +18,7 @@ import jakarta.validation.Valid;
 public class SignupController {
     
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
     
     @GetMapping("/")
     public String index() {
@@ -48,8 +53,17 @@ public class SignupController {
         }
         
         try {
+            // keep raw password for authentication after registration
+            String rawPassword = user.getPassword();
             userService.registerUser(user);
-            return "redirect:/success";
+
+            // authenticate the newly registered user
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword)
+            );
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            return "redirect:/posts";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "signup";
