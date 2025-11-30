@@ -13,6 +13,7 @@
             <p class="text-gray-600 text-center mb-6">새로운 계정을 만들어보세요</p>
             
             <form id="signupForm" method="POST" action="/signup" class="space-y-4">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <!-- 이름 -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">이름 *</label>
@@ -99,67 +100,6 @@
         </div>
     </div>
     
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // 에러 메시지 초기화
-            document.querySelectorAll('[id$="Error"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('errorMessage').classList.add('hidden');
-            document.getElementById('successMessage').classList.add('hidden');
-            
-            // 비밀번호 확인 검증
-            const password = document.getElementById('password').value;
-            const passwordConfirm = document.getElementById('passwordConfirm').value;
-            
-            if (password !== passwordConfirm) {
-                document.getElementById('passwordConfirmError').textContent = '비밀번호가 일치하지 않습니다';
-                document.getElementById('passwordConfirmError').classList.remove('hidden');
-                return;
-            }
-            
-            // 약관 동의 확인
-            if (!document.getElementById('agreeToTerms').checked) {
-                document.getElementById('termsError').textContent = '약관에 동의해주세요';
-                document.getElementById('termsError').classList.remove('hidden');
-                return;
-            }
-            
-            // 데이터 수집
-            const userData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                phone: document.getElementById('phone').value,
-                age: parseInt(document.getElementById('age').value),
-                agreeToTerms: true
-            };
-            
-            try {
-                const response = await fetch('/api/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    setTimeout(() => {
-                        window.location.href = '/success';
-                    }, 2000);
-                } else {
-                    document.getElementById('errorText').textContent = data.message;
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                }
-            } catch (error) {
-                document.getElementById('errorText').textContent = '오류가 발생했습니다: ' + error.message;
-                document.getElementById('errorMessage').classList.remove('hidden');
-            }
-        });
-    </script>
+            <!-- 서버 측 폼 제출로 처리합니다 -->
 </body>
 </html>

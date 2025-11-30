@@ -1,15 +1,18 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
   <title>새 글 작성</title>
   </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">새 글 작성</h1>
-    <form th:action="@{/posts}" th:object="${post}" method="post" class="space-y-4">
+<body class="bg-gray-50">
+  <div th:insert="fragments/header :: header"></div>
+  <main class="p-6 max-w-4xl mx-auto">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h1 class="text-2xl font-bold mb-4">새 글 작성</h1>
+      <form th:action="@{/posts}" th:object="${post}" method="post" class="space-y-4">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
       <div>
         <label class="block text-sm font-medium">제목</label>
         <input type="text" th:field="*{title}" class="mt-1 block w-full border rounded p-2" />
@@ -22,11 +25,12 @@
         <label class="block text-sm font-medium">내용</label>
         <textarea th:field="*{content}" rows="8" class="mt-1 block w-full border rounded p-2"></textarea>
       </div>
-      <div class="flex gap-2">
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">등록</button>
-        <a href="/posts" class="bg-gray-200 px-4 py-2 rounded">취소</a>
-      </div>
-    </form>
-  </div>
+        <div class="flex gap-2">
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">등록</button>
+          <a href="/posts" class="bg-gray-200 px-4 py-2 rounded">취소</a>
+        </div>
+      </form>
+    </div>
+  </main>
 </body>
 </html>
