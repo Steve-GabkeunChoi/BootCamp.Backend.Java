@@ -133,10 +133,14 @@ JSON 형식의 회원가입 요청
 
 ## 설정 파일
 
-`application.properties`에서 MongoDB 연결 설정을 변경할 수 있습니다:
+`application.properties`에서 MariaDB 연결 설정을 변경할 수 있습니다:
 
 ```properties
-spring.data.mongodb.uri=mongodb://localhost:27017/signup_db
+spring.datasource.url=jdbc:mariadb://localhost:3306/signup_db
+spring.datasource.username=signup
+spring.datasource.password=signup_pass
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
 ```
 
 ## 라이선스
@@ -145,4 +149,4 @@ MIT License
 
 ## 개발자
 
-Created with Spring Boot, Tailwind CSS, and MongoDB
+Created with Spring Boot, Tailwind CSS, and MariaDB
