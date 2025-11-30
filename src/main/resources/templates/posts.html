@@ -20,7 +20,7 @@
       <ul>
         <li th:each="post : ${posts}" class="border-b py-4">
           <a th:href="@{/posts/{id}(id=${post.id})}" class="text-lg text-blue-600" th:text="${post.title}">제목</a>
-          <div class="text-sm text-gray-500" th:text="${post.author} + ' · ' + ${#dates.format(T(java.time.Instant).ofEpochMilli(post.createdAt).atZone(T(java.time.ZoneId).systemDefault()).toLocalDateTime(), 'yyyy-MM-dd HH:mm')}">작성자</div>
+          <div class="text-sm text-gray-500" th:text="${post.author}">작성자</div>
           <div class="mt-2">
             <a th:href="@{/posts/{id}/edit(id=${post.id})}" class="text-sm text-indigo-600 mr-2">수정</a>
             <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="display:inline">
@@ -30,10 +30,10 @@
         </li>
       </ul>
       <div class="mt-4 flex justify-between items-center">
-        <div>페이지 [[${currentPage} + 1]] / [[${totalPages}]]</div>
+        <div>페이지 [[${currentPage + 1}]] / [[${totalPages}]]</div>
         <div class="flex gap-2">
-          <a th:if="${currentPage} > 0" th:href="@{/posts(page=${currentPage - 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">이전</a>
-          <a th:if="${currentPage} + 1 < ${totalPages}" th:href="@{/posts(page=${currentPage + 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">다음</a>
+          <a th:if="${currentPage > 0}" th:href="@{/posts(page=${currentPage - 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">이전</a>
+          <a th:if="${currentPage + 1 < totalPages}" th:href="@{/posts(page=${currentPage + 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">다음</a>
         </div>
       </div>
     </div>
