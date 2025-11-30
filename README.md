@@ -399,6 +399,58 @@ spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
 | API 목록 | GET | /api/posts?page=0&size=10&q= |
 | API 상세보기 | GET | /api/posts/{id} |
 
+## 서버 운영 가이드
+
+아래 명령은 macOS `zsh` 기준이며 프로젝트 루트(`/Users/gabkeunchoi/work/gemini`)에서 실행합니다.
+
+### 서버 시작
+
+```bash
+mvn -q spring-boot:run
+```
+
+### 서버 중지
+
+```bash
+# 포트 8080 점유 프로세스 확인
+lsof -i :8080 -sTCP:LISTEN -Pn || true
+
+# Spring Boot(예: SignupApplication) 및 Maven run 프로세스 종료
+pkill -f SignupApplication || true
+pkill -f 'spring-boot:run' || true
+```
+
+### 서버 재시작
+
+```bash
+# 중지
+pkill -f SignupApplication || true
+pkill -f 'spring-boot:run' || true
+
+# 시작
+mvn -q spring-boot:run
+```
+
+### 포트 사용 확인 (8080)
+
+```bash
+lsof -i :8080 -sTCP:LISTEN -Pn || true
+```
+
+### 백그라운드 실행/로그 확인 (옵션)
+
+```bash
+# 백그라운드 실행 + PID/로그 기록
+nohup mvn -q spring-boot:run > run.log 2>&1 & echo $! > run.pid
+
+# 서버 PID 확인
+cat run.pid
+
+# 최근 로그 확인
+tail -n 200 run.log
+```
+
+
 ## 라이선스
 
 MIT License
