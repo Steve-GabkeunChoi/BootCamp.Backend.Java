@@ -1,0 +1,25 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>게시판</title>
+  </head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">게시판</h1>
+      <a href="/posts/new" class="bg-blue-500 text-white px-4 py-2 rounded">새 글 작성</a>
+    </div>
+    <div>
+      <ul>
+        <li th:each="post : ${posts}" class="border-b py-4">
+          <a th:href="@{/posts/{id}(id=${post.id})}" class="text-lg text-blue-600" th:text="${post.title}">제목</a>
+          <div class="text-sm text-gray-500" th:text="${post.author} + ' · ' + ${#dates.format(#dates.createNow(post.createdAt), 'yyyy-MM-dd HH:mm')}">작성자</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
