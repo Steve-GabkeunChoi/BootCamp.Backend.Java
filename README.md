@@ -325,6 +325,80 @@ spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
 ```
 
+## 최종 작업 현황 (2025-11-30)
+
+### 완료된 작업 사항
+
+1. **프로젝트 초기 구성**
+   - Spring Boot 3.1.5 기반 회원가입 애플리케이션 구축
+   - Tailwind CSS (CDN) 기반 반응형 UI
+   - Thymeleaf 템플릿 엔진 통합
+
+2. **데이터베이스 마이그레이션**
+   - MongoDB에서 MariaDB로 완전 전환
+   - 관계형 데이터베이스 구조 설계
+   - Spring Data JPA + Hibernate ORM 통합
+   - HikariCP 커넥션 풀 구성
+
+3. **회원 관리 시스템**
+   - 회원가입 폼 (이름, 이메일, 비밀번호, 전화, 나이, 약관동의)
+   - 유효성 검사 규칙 적용
+   - User 엔티티 및 UserRepository 구현
+   - UserService 비즈니스 로직
+
+4. **게시판 기능 (포스트)**
+   - Post 엔티티 설계 (id, title, content, author, createdAt)
+   - CRUD 작업: 생성, 조회, 수정, 삭제
+   - 페이징 및 검색 기능 (제목/작성자 기반)
+   - 2가지 인터페이스 제공:
+     - HTML 템플릿 기반 웹 UI (`/posts` 경로)
+     - REST JSON API (`/api/posts` 경로)
+
+5. **템플릿 및 UI**
+   - 게시판 목록: posts.html (페이지네이션, 검색, 삭제 버튼)
+   - 게시글 상세보기: post.html
+   - 게시글 작성: new_post.html
+   - 게시글 수정: edit_post.html
+   - 모든 템플릿 Thymeleaf 문법 에러 수정
+
+6. **버그 수정**
+   - Thymeleaf 템플릿 파싱 에러 해결 (posts.html, post.html)
+   - 복잡한 날짜 포맷팅 표현식 단순화
+   - 조건부 표현식 문법 수정
+
+7. **문서화**
+   - 상세한 설치 및 실행 가이드
+   - Java, Maven, MariaDB 설치 및 검증 절차
+   - 게시판 엔드포인트 및 사용 예제
+   - REST API 명세 문서
+
+8. **버전 관리**
+   - GitHub 리포지토리 (Steve-GabkeunChoi/BootCamp.Backend.Java)
+   - 총 10개 커밋 완료
+   - 모든 변경사항 동기화됨
+
+### 서버 상태 ✓
+
+- **포트**: 8080
+- **데이터베이스**: MariaDB (signup_db)
+- **상태**: 정상 실행 중
+- **테스트됨**: 모든 주요 엔드포인트 작동 확인
+
+### 엔드포인트 요약
+
+| 기능 | 메서드 | 경로 |
+|------|--------|------|
+| 회원가입 | GET/POST | /signup |
+| 게시판 목록 | GET | /posts |
+| 게시글 작성 폼 | GET | /posts/new |
+| 게시글 작성 | POST | /posts |
+| 게시글 상세보기 | GET | /posts/{id} |
+| 게시글 수정 폼 | GET | /posts/{id}/edit |
+| 게시글 수정 | POST | /posts/{id} |
+| 게시글 삭제 | POST | /posts/{id}/delete |
+| API 목록 | GET | /api/posts?page=0&size=10&q= |
+| API 상세보기 | GET | /api/posts/{id} |
+
 ## 라이선스
 
 MIT License
