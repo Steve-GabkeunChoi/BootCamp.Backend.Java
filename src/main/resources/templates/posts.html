@@ -6,39 +6,62 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <title>게시판</title>
   </head>
-<body class="bg-gray-50">
+<body class="bg-gradient-to-br from-slate-50 to-white min-h-screen">
   <div th:insert="fragments/header :: header"></div>
-  <main class="p-6 max-w-4xl mx-auto">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">게시판</h1>
-        <a href="/posts/new" class="bg-blue-600 text-white px-4 py-2 rounded">새 글 작성</a>
+  <main class="px-6 py-10 max-w-5xl mx-auto">
+    <div class="bg-white/80 backdrop-blur rounded-xl shadow-sm border border-slate-200">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 border-b">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800">게시판</h1>
+          <p class="text-sm text-slate-500">글을 검색하고, 읽고, 관리하세요</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="/posts/new" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            새 글 작성
+          </a>
+        </div>
       </div>
-    <div>
-      <form method="get" class="mb-4">
-        <input type="text" name="q" placeholder="검색 (제목/작성자)" class="border p-2 rounded" th:value="${q}" />
-        <button class="ml-2 bg-gray-200 px-3 py-2 rounded">검색</button>
-      </form>
-      <ul>
-        <li th:each="post : ${posts}" class="border-b py-4">
-          <a th:href="@{/posts/{id}(id=${post.id})}" class="text-lg text-blue-600" th:text="${post.title}">제목</a>
-          <div class="text-sm text-gray-500" th:text="${post.author}">작성자</div>
-          <div class="mt-2">
-            <a th:href="@{/posts/{id}/edit(id=${post.id})}" class="text-sm text-indigo-600 mr-2">수정</a>
-            <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="display:inline">
-              <button class="text-sm text-red-600">삭제</button>
-            </form>
+
+      <div class="p-6">
+        <form method="get" class="mb-6">
+          <div class="flex gap-2">
+            <input type="text" name="q" placeholder="검색 (제목/작성자)" class="flex-1 px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600" th:value="${q}" />
+            <button class="px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-900">검색</button>
           </div>
-        </li>
-      </ul>
-      <div class="mt-4 flex justify-between items-center">
-        <div>페이지 [[${currentPage + 1}]] / [[${totalPages}]]</div>
-        <div class="flex gap-2">
-          <a th:if="${currentPage > 0}" th:href="@{/posts(page=${currentPage - 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">이전</a>
-          <a th:if="${currentPage + 1 < totalPages}" th:href="@{/posts(page=${currentPage + 1},size=10,q=${q})}" class="px-3 py-1 bg-gray-200 rounded">다음</a>
+        </form>
+
+        <div th:if="${#lists.isEmpty(posts)}" class="text-center py-16 text-slate-500">
+          아직 등록된 글이 없습니다.
+        </div>
+
+        <ul th:if="${!#lists.isEmpty(posts)}" class="divide-y divide-slate-200">
+          <li th:each="post : ${posts}" class="py-5">
+            <div class="flex justify-between items-start">
+              <div>
+                <a th:href="@{/posts/{id}(id=${post.id})}" class="text-lg font-semibold text-indigo-700 hover:text-indigo-900" th:text="${post.title}">제목</a>
+                <div class="mt-1 text-sm text-slate-500">작성자: <span th:text="${post.author}">작성자</span></div>
+              </div>
+              <div class="flex items-center gap-2">
+                <a th:href="@{/posts/{id}/edit(id=${post.id})}" class="text-xs px-3 py-1 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">수정</a>
+                <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" class="inline">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                  <button type="submit" class="text-xs px-3 py-1 rounded-md border border-red-300 text-red-700 hover:bg-red-50">삭제</button>
+                </form>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="text-sm text-slate-600">페이지 [[${currentPage + 1}]] / [[${totalPages}]]</div>
+          <div class="flex gap-2">
+            <a th:if="${currentPage > 0}" th:href="@{/posts(page=${currentPage - 1},size=10,q=${q})}" class="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-50">이전</a>
+            <a th:if="${currentPage + 1 < totalPages}" th:href="@{/posts(page=${currentPage + 1},size=10,q=${q})}" class="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-50">다음</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>
