@@ -5,14 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -21,14 +21,16 @@ import org.springframework.security.config.annotation.authentication.configurati
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final com.example.security.LegacyAuthenticationProvider legacyAuthenticationProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/signup", "/login", "/css/**", "/js/**", "/images/**", "/", "/success").permitAll()
-                        .requestMatchers("/posts/**").authenticated()
-                        .anyRequest().permitAll()
+                    .requestMatchers("/signup", "/api/signup", "/login", "/css/**", "/js/**", "/images/**", "/success").permitAll()
+                    .requestMatchers("/posts/**").authenticated()
+                    .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -45,14 +47,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    // PasswordEncoder is provided by SecurityBeansConfig
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
     }
 
+    // LegacyAuthenticationProvider is a component and will be picked up by the AuthenticationManager
+
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() {
+        // Order: try legacy provider first (handles plaintext migration), then DAO provider
+        return new ProviderManager(java.util.List.of(legacyAuthenticationProvider, authenticationProvider()));
     }
 
     @Bean

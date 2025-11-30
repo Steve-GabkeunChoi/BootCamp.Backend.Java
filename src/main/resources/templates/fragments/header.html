@@ -13,7 +13,7 @@
         </div>
         <div class="flex items-center gap-4">
           <div sec:authorize="isAuthenticated()" class="flex items-center gap-3">
-            <span class="text-sm text-gray-700">안녕하세요, <strong sec:authentication="name"></strong></span>
+            <span class="text-sm text-gray-700">안녕하세요, <strong sec:authentication="principal.name"></strong>님</span>
             <form th:action="@{/logout}" method="post">
               <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
               <button type="submit" class="text-sm text-gray-600">로그아웃</button>

@@ -3,10 +3,10 @@ package com.example.controller;
 import com.example.model.User;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.security.CustomUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,11 +18,18 @@ import jakarta.validation.Valid;
 public class SignupController {
     
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
     
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String index(org.springframework.security.core.Authentication authentication) {
+        // If the user is authenticated, send them to the posts list
+        if (authentication != null && authentication.isAuthenticated() &&
+                !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            return "redirect:/posts";
+        }
+
+        // Otherwise send to login page
+        return "redirect:/login";
     }
     
     @GetMapping("/signup")
@@ -53,17 +60,15 @@ public class SignupController {
         }
         
         try {
-            // keep raw password for authentication after registration
-            String rawPassword = user.getPassword();
-            userService.registerUser(user);
+                userService.registerUser(user);
 
-            // authenticate the newly registered user
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword)
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                // Auto-login: load UserDetails and set authentication in SecurityContext
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            return "redirect:/posts";
+                return "redirect:/posts";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "signup";

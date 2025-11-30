@@ -33,4 +33,9 @@ public class UserService {
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
+
+    public void updatePassword(User user, String encodedPassword) {
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+    }
 }
