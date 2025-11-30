@@ -243,6 +243,67 @@ JSON 형식의 회원가입 요청
 ### GET /success
 회원가입 완료 페이지
 
+## 게시판 기능 (Bulletin Board)
+
+이번 업데이트로 게시판 기능이 추가되었습니다. 주요 기능과 사용법은 아래와 같습니다.
+
+- **기능 요약**:
+  - 게시글 목록 조회, 작성, 보기, 수정, 삭제
+  - 페이징(Page) 및 검색(제목/작성자) 지원
+  - REST API (JSON) 제공
+  - 서버사이드 렌더링 템플릿(Thymeleaf) 제공
+
+- **주요 엔드포인트 (템플릿/브라우저)**:
+  - `GET /posts` : 게시글 목록 (쿼리: `page`, `size`, `q`)
+  - `GET /posts/new` : 새 글 작성 폼
+  - `POST /posts` : 새 글 생성 (폼 제출)
+  - `GET /posts/{id}` : 게시글 보기
+  - `GET /posts/{id}/edit` : 게시글 수정 폼
+  - `POST /posts/{id}` : 게시글 업데이트
+  - `POST /posts/{id}/delete` : 게시글 삭제
+
+- **REST API (JSON)**:
+  - `GET /api/posts?page=0&size=10` : 게시글 페이징 리스트
+  - `GET /api/posts?q=검색어&page=0&size=10` : 검색(제목/작성자)
+  - `GET /api/posts/{id}` : 단건 조회
+  - `POST /api/posts` : 게시글 생성 (JSON body)
+  - `PUT /api/posts/{id}` : 게시글 수정 (JSON body)
+  - `DELETE /api/posts/{id}` : 게시글 삭제
+
+- **템플릿 파일 (Thymeleaf)**:
+  - `src/main/resources/templates/posts.html` — 게시글 목록
+  - `src/main/resources/templates/new_post.html` — 새 글 작성
+  - `src/main/resources/templates/post.html` — 게시글 보기
+  - `src/main/resources/templates/edit_post.html` — 게시글 수정
+
+- **주요 서버 코드 파일**:
+  - `src/main/java/com/example/model/Post.java` — JPA 엔티티
+  - `src/main/java/com/example/repository/PostRepository.java` — JPA 리포지토리 (검색/페이징 메서드 포함)
+  - `src/main/java/com/example/service/PostService.java` — 게시글 비즈니스 로직 (페이징/검색 포함)
+  - `src/main/java/com/example/controller/PostController.java` — 템플릿 핸들러 (브라우저)
+  - `src/main/java/com/example/controller/PostRestController.java` — JSON REST API 핸들러
+
+- **간단한 사용 예시 (curl)**:
+
+  - 게시글 생성 (JSON):
+    ```bash
+    curl -X POST http://localhost:8080/api/posts \
+      -H "Content-Type: application/json" \
+      -d '{"title":"테스트 글","content":"본문 내용","author":"작성자"}'
+    ```
+
+  - 게시글 목록 조회 (페이징):
+    ```bash
+    curl 'http://localhost:8080/api/posts?page=0&size=10'
+    ```
+
+  - 게시글 검색:
+    ```bash
+    curl 'http://localhost:8080/api/posts?q=검색어&page=0&size=10'
+    ```
+
+이 변경사항은 저장소에 커밋되어 있으며, 서버를 재시작하면 바로 확인하실 수 있습니다.
+
 ## 유효성 검사 규칙
 
 - **이름**: 필수
